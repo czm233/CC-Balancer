@@ -1,0 +1,78 @@
+@import "tailwindcss";
+
+/* 全局样式 */
+body {
+  margin: 0;
+  background-color: #0F172A;
+  color: #e2e8f0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  min-height: 100vh;
+}
+
+/* 滑块自定义样式 */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 3px;
+  background: #334155;
+  outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #10B981;
+  cursor: pointer;
+  border: 2px solid #0F172A;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #10B981;
+  cursor: pointer;
+  border: 2px solid #0F172A;
+  box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
+}
+
+/* 双滑块样式：两个 range 叠加实现区间选择 */
+.dual-range-slider {
+  position: relative;
+  height: 20px;
+}
+
+.dual-range-slider input[type="range"] {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  pointer-events: none;
+  background: transparent;
+  margin: 0;
+  height: 20px;
+}
+
+/* 只让 thumb 可以被点击拖动 */
+.dual-range-slider input[type="range"]::-webkit-slider-thumb {
+  pointer-events: auto;
+}
+
+.dual-range-slider input[type="range"]::-moz-range-thumb {
+  pointer-events: auto;
+}
+
+/* 底层 range 提供轨道背景 */
+.dual-range-track {
+  z-index: 1;
+}
+
+/* 上层 range 无轨道背景 */
+.dual-range-start {
+  z-index: 2;
+}
