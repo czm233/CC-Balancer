@@ -14,8 +14,6 @@ LOG_FILE="${HOME}/cc-balancer-activator.log"
 export PATH="${HOME}/.local/bin:${HOME}/.nvm/versions/node/$(ls -1 "${HOME}/.nvm/versions/node/" 2>/dev/null | tail -1)/bin:/usr/local/bin:${PATH}"
 # Claude 命令路径（如果不在 PATH 中，请修改为绝对路径）
 CLAUDE_CMD="claude"
-# 激活命令参数
-CLAUDE_ARGS=(-p "say ok" --dangerously-skip-permissions)
 # 超时时间（秒），防止 claude 进程挂起
 TIMEOUT_SECONDS=60
 
@@ -45,10 +43,10 @@ main() {
     fi
 
     # 执行激活命令
-    log "执行: ${CLAUDE_CMD} ${CLAUDE_ARGS[*]}"
+    log "执行: ${CLAUDE_CMD} -p \"say ok\" --dangerously-skip-permissions"
     local exit_code=0
     local output
-    output=$(timeout "${TIMEOUT_SECONDS}" "${CLAUDE_CMD}" "${CLAUDE_ARGS[@]}" 2>&1) || exit_code=$?
+    output=$(timeout "${TIMEOUT_SECONDS}" "${CLAUDE_CMD}" -p "say ok" --dangerously-skip-permissions < /dev/null 2>&1) || exit_code=$?
 
     if (( exit_code == 0 )); then
         log "激活成功"
