@@ -29,7 +29,3 @@ dist-ssr
 
 # Playwright MCP
 .playwright-mcp/
-
-# BMAD
-_bmad/
-_bmad-output/
