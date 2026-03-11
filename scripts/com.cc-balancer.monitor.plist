@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+    <!-- 标识符 -->
+    <key>Label</key>
+    <string>com.cc-balancer.monitor</string>
+
+    <!-- 执行的脚本路径（安装时会替换为实际路径） -->
+    <key>ProgramArguments</key>
+    <array>
+        <string>/bin/bash</string>
+        <string>__MONITOR_SCRIPT_PATH__</string>
+    </array>
+
+    <!-- 每 60 秒运行一次 -->
+    <key>StartInterval</key>
+    <integer>60</integer>
+
+    <!-- 加载后立即运行一次 -->
+    <key>RunAtLoad</key>
+    <true/>
+
+    <!-- 标准输出和错误日志 -->
+    <key>StandardOutPath</key>
+    <string>__LOG_DIR__/cc-balancer-monitor.log</string>
+    <key>StandardErrorPath</key>
+    <string>__LOG_DIR__/cc-balancer-monitor-error.log</string>
+</dict>
+</plist>
