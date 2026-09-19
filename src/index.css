@@ -1,4 +1,4 @@
-@import "tailwindcss";
+@import "tailwindcss" source(".");
 
 /* 全局样式 */
 body {
@@ -39,40 +39,4 @@ input[type="range"]::-moz-range-thumb {
   cursor: pointer;
   border: 2px solid #0F172A;
   box-shadow: 0 0 6px rgba(16, 185, 129, 0.5);
-}
-
-/* 双滑块样式：两个 range 叠加实现区间选择 */
-.dual-range-slider {
-  position: relative;
-  height: 20px;
-}
-
-.dual-range-slider input[type="range"] {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  pointer-events: none;
-  background: transparent;
-  margin: 0;
-  height: 20px;
-}
-
-/* 只让 thumb 可以被点击拖动 */
-.dual-range-slider input[type="range"]::-webkit-slider-thumb {
-  pointer-events: auto;
-}
-
-.dual-range-slider input[type="range"]::-moz-range-thumb {
-  pointer-events: auto;
-}
-
-/* 底层 range 提供轨道背景 */
-.dual-range-track {
-  z-index: 1;
-}
-
-/* 上层 range 无轨道背景 */
-.dual-range-start {
-  z-index: 2;
 }

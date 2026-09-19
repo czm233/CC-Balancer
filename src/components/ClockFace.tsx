@@ -6,6 +6,11 @@ import { CYCLE_COLORS, BUSY_COLORS } from '../utils/colors'
 interface ClockFaceProps {
   /** 'am' 表示 0-12，'pm' 表示 12-24 */
   period: 'am' | 'pm'
+  lunchSlot?: TimeSlot
+  cycleLabel?: string
+  busyLabel?: string
+  busyColor?: string
+  cycleColors?: string[]
   /** 忙时区间（全局分钟 0-1440） */
   busySlots: TimeSlot[]
   /** 5h Token 周期数组 */
@@ -115,7 +120,7 @@ function arcPath(
 
 /** 每个 5h 周期独立颜色，同一周期跨两个时钟时保持同色 */
 
-export default function ClockFace({ period, busySlots, cycles, onBusySlotsChange }: ClockFaceProps) {
+export default function ClockFace({ period, busySlots, cycles, lunchSlot, onBusySlotsChange, busyColor, busyLabel = '忙时', cycleLabel = '周期', cycleColors = CYCLE_COLORS }: ClockFaceProps) {
   const label = period === 'am' ? 'AM' : 'PM'
   const hourOffset = period === 'am' ? 0 : 12
   const svgRef = useRef<SVGSVGElement>(null)
@@ -260,7 +265,7 @@ export default function ClockFace({ period, busySlots, cycles, onBusySlotsChange
           const sorted = [...busySlots].map((slot, i) => ({ slot, origIdx: i }))
           sorted.sort((a, b) => a.slot.start - b.slot.start)
           return sorted.map(({ slot }, sortedIdx) => {
-            const color = BUSY_COLORS[sortedIdx % 2]
+            const color = busyColor ?? BUSY_COLORS[sortedIdx % 2]
             const clipped = clipSlotToPeriod(slot, period)
             return clipped.map((seg, idx) => {
               const startAngle = minutesToAngle(seg.start, period)
@@ -281,10 +286,17 @@ export default function ClockFace({ period, busySlots, cycles, onBusySlotsChange
           })
         })()}
 
+        {lunchSlot && clipSlotToPeriod(lunchSlot, period).map((seg, idx) => {
+          const startAngle = minutesToAngle(seg.start, period)
+          const endAngle = minutesToAngle(seg.end, period)
+          if (Math.abs(endAngle - startAngle) < 0.1) return null
+          return <path key={`lunch-${idx}`} aria-label={`午休时间 ${formatMinutes(seg.start)}–${formatMinutes(seg.end)}`} d={arcPath(CENTER, CENTER, INNER_R, startAngle, endAngle)} fill="none" stroke="#34D399" strokeWidth={ARC_WIDTH} strokeLinecap="butt" opacity={0.7} />
+        })}
+
         {/* 5h Token 周期弧形（外圈），每个周期独立颜色 */}
         {cycles.map((cycle, cycleIdx) => {
           const clipped = clipSlotToPeriod(cycle, period)
-          const color = CYCLE_COLORS[cycleIdx % CYCLE_COLORS.length]
+          const color = cycleColors[cycleIdx % cycleColors.length]
           return clipped.map((seg, idx) => {
             const startAngle = minutesToAngle(seg.start, period)
             const endAngle = minutesToAngle(seg.end, period)
@@ -308,7 +320,7 @@ export default function ClockFace({ period, busySlots, cycles, onBusySlotsChange
           <path
             d={arcPath(CENTER, CENTER, INNER_R, previewArc.startAngle, previewArc.endAngle)}
             fill="none"
-            stroke={BUSY_COLORS[0]}
+            stroke={busyColor ?? BUSY_COLORS[0]}
             strokeWidth={ARC_WIDTH}
             strokeLinecap="butt"
             opacity={0.4}
@@ -336,7 +348,7 @@ export default function ClockFace({ period, busySlots, cycles, onBusySlotsChange
             y={CENTER + 10}
             textAnchor="middle"
             dominantBaseline="central"
-            fill={BUSY_COLORS[0]}
+            fill={busyColor ?? BUSY_COLORS[0]}
             fontSize={11}
             fontWeight={600}
           >
@@ -346,21 +358,22 @@ export default function ClockFace({ period, busySlots, cycles, onBusySlotsChange
       </svg>
 
       {/* 图例 + 拖拽提示 */}
-      <div className="flex gap-3 mt-2 text-xs text-slate-400">
+      <div className="flex flex-wrap justify-center gap-3 mt-2 text-xs text-slate-400">
         <span className="flex items-center gap-1">
           <span className="flex gap-0.5">
-            <span className="inline-block w-2 h-3 rounded-xs" style={{ backgroundColor: BUSY_COLORS[0] }} />
-            <span className="inline-block w-2 h-3 rounded-xs" style={{ backgroundColor: BUSY_COLORS[1] }} />
+            <span className="inline-block w-2 h-3 rounded-xs" style={{ backgroundColor: busyColor ?? BUSY_COLORS[0] }} />
+            {!busyColor && <span className="inline-block w-2 h-3 rounded-xs" style={{ backgroundColor: BUSY_COLORS[1] }} />}
           </span>
-          忙时
+          {busyLabel}
         </span>
+        {lunchSlot && <span className="flex items-center gap-1"><span className="inline-block w-2 h-3 rounded-xs" style={{backgroundColor: '#34D399'}}/>午休时间</span>}
         <span className="flex items-center gap-1">
           <span className="flex gap-0.5">
-            {CYCLE_COLORS.map((c, i) => (
+            {cycleColors.map((c, i) => (
               <span key={i} className="inline-block w-2 h-3 rounded-xs" style={{ backgroundColor: c }} />
             ))}
           </span>
-          周期
+          {cycleLabel}
         </span>
       </div>
       {onBusySlotsChange && (
